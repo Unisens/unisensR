@@ -1,9 +1,6 @@
 library(rJava)
 
-unisensR <- function(){
-}
-
-readValuesEntryUnisens <- function(unisensFolder, id){
+readUnisensValuesEntry <- function(unisensFolder, id){
 	unisensFactory <- J('org.unisens.UnisensFactoryBuilder', 'createFactory')
 	unisens <- J(unisensFactory, 'createUnisens', unisensFolder)
   start <- readStartTime(unisens)

@@ -1,2 +1,2 @@
 import("rJava")
-export("unisensR")
+export("readUnisensValuesEntry")

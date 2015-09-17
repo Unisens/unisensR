@@ -7,6 +7,7 @@ Currenlty it is only supported to read ValuesEntrys
 ## How to install unisensR
 ```r
 install.packages("devtools")
+library(devtools)
 devtools::install_github('Unisens/unisensR')
 ```
 
