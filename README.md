@@ -2,7 +2,7 @@
 
 This library is a prototype to demonstrate how to use the unisens file format in R.
 
-Currenlty it is only supported to read ValuesEntrys
+Currenlty it is only supported to read CSV ValuesEntries and EventEntries with comma separated values.
 
 ## How to install unisensR
 ```r
@@ -14,7 +14,8 @@ devtools::install_github('Unisens/unisensR')
 ## How to use unisensR
 ```r
 library(unisensR)
-location <- readValuesEntryUnisens('C:/path/to/unisens/folder', 'Location.csv')
+location <- readUnisensValuesEntry('C:/path/to/unisens/folder', 'Location.csv')
+location <- readUnisensEventEntry('C:/path/to/unisens/folder', 'SMS.csv')
 ```
 
 ## Troubleshooting
