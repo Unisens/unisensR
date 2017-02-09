@@ -1,25 +1,45 @@
-library(rJava)
+#' @import rJava
+#'
+NULL
 
+#' Read Unisens Values Entry
+#'
+#' @export
+#'
+#' @param unisensFolder Unisens Folder
+#' @param id ID of the values entry.
+#' @return DataFrame.
+#' @examples
+#' readUnisensValuesEntry('C:/path/to/unisens/folder', 'Location.csv')
 readUnisensValuesEntry <- function(unisensFolder, id){
-  unisensFactory <- J('org.unisens.UnisensFactoryBuilder', 'createFactory')
-  unisens <- J(unisensFactory, 'createUnisens', unisensFolder)
+  unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
+  unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
   start <- readStartTime(unisens)
-  entry <- J(unisens, 'getEntry', id)
-  timedEntry <- .jcast(entry, new.class = "org.unisens.ValuesEntry", check = TRUE, convert.array = FALSE)
-  sampleRate <- J(timedEntry, 'getSampleRate')
+  entry <- rJava::J(unisens, 'getEntry', id)
+  timedEntry <- rJava::.jcast(entry, new.class = "org.unisens.ValuesEntry", check = TRUE, convert.array = FALSE)
+  sampleRate <- rJava::J(timedEntry, 'getSampleRate')
   csvData <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = ",")
   csvData <- setTime(csvData, start, sampleRate)
   csvData <- setValuesEntryColumnNames(timedEntry, csvData)
   return(csvData)
 }
 
+#' Read Unisens Event Entry
+#'
+#' @export
+#'
+#' @param unisensFolder Unisens Folder
+#' @param id ID of the event entry.
+#' @return DataFrame.
+#' @examples
+#' readUnisensEventEntry('C:/path/to/unisens/folder', 'SMS.csv')
 readUnisensEventEntry <- function(unisensFolder, id){
-  unisensFactory <- J('org.unisens.UnisensFactoryBuilder', 'createFactory')
-  unisens <- J(unisensFactory, 'createUnisens', unisensFolder)
+  unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
+  unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
   start <- readStartTime(unisens)
-  entry <- J(unisens, 'getEntry', id)
-  timedEntry <- .jcast(entry, new.class = "org.unisens.EventEntry", check = TRUE, convert.array = FALSE)
-  sampleRate <- J(timedEntry, 'getSampleRate')
+  entry <- rJava::J(unisens, 'getEntry', id)
+  timedEntry <- rJava::.jcast(entry, new.class = "org.unisens.EventEntry", check = TRUE, convert.array = FALSE)
+  sampleRate <- rJava::J(timedEntry, 'getSampleRate')
   csvData <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = ",")
   csvData <- setTime(csvData, start, sampleRate)
   csvData <- setEventEntryColumnNames(timedEntry, csvData)
