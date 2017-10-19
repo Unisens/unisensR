@@ -1,6 +1,6 @@
 Package: unisensR
 Title: Library to read Unisens data into R
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: person("Jürgen", "Stumpp", email = "Stumpp@movisens.com", role = c("aut", "cre"))
 Description: Currently a Prototype! It will enable to read unisens data into R.
 Depends: R (>= 3.2.0)

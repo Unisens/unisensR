@@ -12,16 +12,25 @@ NULL
 #' @examples
 #' readUnisensValuesEntry('C:/path/to/unisens/folder', 'Location.csv')
 readUnisensValuesEntry <- function(unisensFolder, id){
-  unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
-  unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
-  start <- readStartTime(unisens)
-  entry <- rJava::J(unisens, 'getEntry', id)
-  timedEntry <- rJava::.jcast(entry, new.class = "org.unisens.ValuesEntry", check = TRUE, convert.array = FALSE)
-  sampleRate <- rJava::J(timedEntry, 'getSampleRate')
-  csvData <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = ",")
-  csvData <- setTime(csvData, start, sampleRate)
-  csvData <- setValuesEntryColumnNames(timedEntry, csvData)
-  return(csvData)
+  if(unisensXMLExists(unisensFolder)){
+    unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
+    unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
+    start <- readStartTime(unisens)
+    entry <- rJava::J(unisens, 'getEntry', id)
+    timedEntry <- rJava::.jcast(entry, new.class = "org.unisens.ValuesEntry", check = TRUE, convert.array = FALSE)
+    sampleRate <- rJava::J(timedEntry, 'getSampleRate')
+    csvData <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = ",")
+    csvData <- setTime(csvData, start, sampleRate)
+    csvData <- setValuesEntryColumnNames(timedEntry, csvData)
+    return(csvData)
+  }
+  else
+    stop('Folder does not contain Unisens data!')
+}
+
+unisensXMLExists <- function(unisensFolder){
+  unisensXML <- paste(unisensFolder, 'unisens.xml', sep = '/')
+  file.exists(unisensXML)
 }
 
 #' Read Unisens Event Entry
@@ -34,16 +43,20 @@ readUnisensValuesEntry <- function(unisensFolder, id){
 #' @examples
 #' readUnisensEventEntry('C:/path/to/unisens/folder', 'SMS.csv')
 readUnisensEventEntry <- function(unisensFolder, id){
-  unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
-  unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
-  start <- readStartTime(unisens)
-  entry <- rJava::J(unisens, 'getEntry', id)
-  timedEntry <- rJava::.jcast(entry, new.class = "org.unisens.EventEntry", check = TRUE, convert.array = FALSE)
-  sampleRate <- rJava::J(timedEntry, 'getSampleRate')
-  csvData <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = ",")
-  csvData <- setTime(csvData, start, sampleRate)
-  csvData <- setEventEntryColumnNames(timedEntry, csvData)
-  return(csvData)
+  if(unisensXMLExists(unisensFolder)){
+    unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
+    unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
+    start <- readStartTime(unisens)
+    entry <- rJava::J(unisens, 'getEntry', id)
+    timedEntry <- rJava::.jcast(entry, new.class = "org.unisens.EventEntry", check = TRUE, convert.array = FALSE)
+    sampleRate <- rJava::J(timedEntry, 'getSampleRate')
+    csvData <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = ",")
+    csvData <- setTime(csvData, start, sampleRate)
+    csvData <- setEventEntryColumnNames(timedEntry, csvData)
+    return(csvData)
+  }
+  else
+    stop('Folder does not contain Unisens data!')
 }
 
 setTime <- function(data, startTime, sampleRate) {
@@ -69,4 +82,17 @@ readStartTime <- function(unisens) {
   timeStampStartUnix <- J(timeStampStart, 'getTime')
   start <- as.POSIXct(timeStampStartUnix/1000, origin="1970-01-01")
   return(start)
+}
+
+#' @export
+#'
+readUnisensStartTime <- function(unisensFolder) {
+  if(unisensXMLExists(unisensFolder)){
+    unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
+    unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
+    start <- readStartTime(unisens)
+    start
+  }
+  else
+    stop('Folder does not contain Unisens data!')
 }
