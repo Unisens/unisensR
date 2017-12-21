@@ -1,11 +1,11 @@
 Package: unisensR
 Title: Library to read Unisens data into R
-Version: 0.2.1
+Version: 0.3.1
 Authors@R: person("Jürgen", "Stumpp", email = "Stumpp@movisens.com", role = c("aut", "cre"))
 Description: Currently a Prototype! It will enable to read unisens data into R.
 Depends: R (>= 3.2.0)
 License: LGPL
 LazyData: true
 Imports:
-    rJava (>= 0.5-0)
+    XML (>= 1.0.0)
 RoxygenNote: 6.0.1

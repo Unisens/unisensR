@@ -18,5 +18,5 @@ DataFrame.
 Read Unisens Event Entry
 }
 \examples{
-readUnisensEventEntry('C:/path/to/unisens/folder', 'SMS.csv')
+readUnisensEventEntry('../UnisensR/inst/extdata/unisensExample', 'qrs-trigger.csv')
 }

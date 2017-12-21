@@ -1,6 +1,11 @@
-#' @import rJava
+library(XML)
+
+#' @import XML
+#' @importFrom utils read.csv
 #'
 NULL
+
+namespaces <- c(ns="http://www.unisens.org/unisens2.0")
 
 #' Read Unisens Values Entry
 #'
@@ -10,18 +15,20 @@ NULL
 #' @param id ID of the values entry.
 #' @return DataFrame.
 #' @examples
-#' readUnisensValuesEntry('C:/path/to/unisens/folder', 'Location.csv')
+#' readUnisensValuesEntry('../UnisensR/inst/extdata/unisensExample', 'rr.csv')
 readUnisensValuesEntry <- function(unisensFolder, id){
   if(unisensXMLExists(unisensFolder)){
-    unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
-    unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
-    start <- readStartTime(unisens)
-    entry <- rJava::J(unisens, 'getEntry', id)
-    timedEntry <- rJava::.jcast(entry, new.class = "org.unisens.ValuesEntry", check = TRUE, convert.array = FALSE)
-    sampleRate <- rJava::J(timedEntry, 'getSampleRate')
+    doc <- xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    start <- readStartTime(doc)
+    xpath <- paste("//ns:valuesEntry[@id='", id, "']", sep = '')
+    entries <- getNodeSet(doc, xpath, namespaces )
+    if(length(entries) <= 0) stop(paste('No ValuesEntry found with name', id))
+    entry <- entries[[1]]
+    sampleRate <- as.numeric(xmlGetAttr(entry, "sampleRate"))
     csvData <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = ",")
     csvData <- setTime(csvData, start, sampleRate)
-    csvData <- setValuesEntryColumnNames(timedEntry, csvData)
+    csvData <- setValuesEntryColumnNames(entry, csvData)
+    free(doc)
     return(csvData)
   }
   else
@@ -41,18 +48,20 @@ unisensXMLExists <- function(unisensFolder){
 #' @param id ID of the event entry.
 #' @return DataFrame.
 #' @examples
-#' readUnisensEventEntry('C:/path/to/unisens/folder', 'SMS.csv')
+#' readUnisensEventEntry('../UnisensR/inst/extdata/unisensExample', 'qrs-trigger.csv')
 readUnisensEventEntry <- function(unisensFolder, id){
   if(unisensXMLExists(unisensFolder)){
-    unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
-    unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
-    start <- readStartTime(unisens)
-    entry <- rJava::J(unisens, 'getEntry', id)
-    timedEntry <- rJava::.jcast(entry, new.class = "org.unisens.EventEntry", check = TRUE, convert.array = FALSE)
-    sampleRate <- rJava::J(timedEntry, 'getSampleRate')
+    doc <- xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    start <- readStartTime(doc)
+    xpath <- paste("//ns:eventEntry[@id='", id, "']", sep = '')
+    entries <- getNodeSet(doc, xpath, namespaces )
+    if(length(entries) <= 0) stop(paste('No EventEntry found with name', id))
+    entry <- entries[[1]]
+    sampleRate <- as.numeric(xmlGetAttr(entry, "sampleRate"))
     csvData <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = ",")
     csvData <- setTime(csvData, start, sampleRate)
-    csvData <- setEventEntryColumnNames(timedEntry, csvData)
+    csvData <- setEventEntryColumnNames(entry, csvData)
+    free(doc)
     return(csvData)
   }
   else
@@ -66,8 +75,11 @@ setTime <- function(data, startTime, sampleRate) {
 }
 
 setValuesEntryColumnNames <- function(entry, data) {
-  channelNames <- c('Time',J(entry, 'getChannelNames'))
-  colnames(data) <- channelNames
+  entryDoc <- xmlDoc(entry)
+  channels <- getNodeSet(entryDoc, "//ns:channel", namespaces )
+  free(entryDoc)
+  channelNames <- sapply(channels, function(el) xmlGetAttr(el, "name"))
+  colnames(data) <- c('Time', channelNames)
   return(data)
 }
 
@@ -77,20 +89,25 @@ setEventEntryColumnNames <- function(entry, data) {
   return(data)
 }
 
-readStartTime <- function(unisens) {
-  timeStampStart <- J(unisens, 'getTimestampStart')
-  timeStampStartUnix <- J(timeStampStart, 'getTime')
-  start <- as.POSIXct(timeStampStartUnix/1000, origin="1970-01-01")
+readStartTime <- function(doc) {
+  startTimeString <- xmlGetAttr(xmlRoot(doc), "timestampStart")
+  start <- as.POSIXct(strptime(startTimeString, "%Y-%m-%dT%H:%M:%S"))
   return(start)
 }
 
+#' Read Unisens Start Time
+#'
 #' @export
 #'
+#' @param unisensFolder Unisens Folder
+#' @return POSIXct unisens start time
+#' @examples
+#' readUnisensStartTime('../UnisensR/inst/extdata/unisensExample')
 readUnisensStartTime <- function(unisensFolder) {
   if(unisensXMLExists(unisensFolder)){
-    unisensFactory <- rJava::J('org.unisens.UnisensFactoryBuilder', 'createFactory')
-    unisens <- rJava::J(unisensFactory, 'createUnisens', unisensFolder)
-    start <- readStartTime(unisens)
+    doc <- xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    start <- readStartTime(doc)
+    free(doc)
     start
   }
   else
