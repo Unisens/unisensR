@@ -53,6 +53,12 @@ readUnisensSignalEntry <- function(unisensFolder, id){
         rbType <- "integer"
         rbSigned <- 1
       }
+      else if (dataType=="int32")
+      {
+        rbSize <- 4;
+        rbType <- "integer"
+        rbSigned <- 1
+      }
       else
       {
         stop("Datatype not defined yet.")
