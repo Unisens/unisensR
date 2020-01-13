@@ -1,11 +1,22 @@
 Package: unisensR
+Type: Package
 Title: Library to read Unisens data into R
-Version: 0.3.1
-Authors@R: person("Jürgen", "Stumpp", email = "Stumpp@movisens.com", role = c("aut", "cre"))
-Description: Currently a Prototype! It will enable to read unisens data into R.
+Version: 0.3.2
+Date: 2020-01-13
+Authors@R: c(
+	person("Martin", "Penzel", email = "Martin.Penzel@movisens.com", role = c("ctb","cre")),
+	person("Jürgen", "Stumpp", email = "Stumpp@movisens.com", role = "aut"),
+	person("Jörg", "Ottenbacher", role = "ctb"),
+	person("Stephan", "Grund", role = "ctb"),
+	person("movisens GmbH", role = "cph")
+	)
+Maintainer: Martin Penzel <Martin.Penzel@movisens.com>
+Description: Provides the ability to read unisens data into R. Unisens is a universal data format for multi sensor data.
 Depends: R (>= 3.2.0)
-License: LGPL
-LazyData: true
 Imports:
     XML (>= 1.0.0)
-RoxygenNote: 6.0.1
+License: LGPL
+URL: http://unisens.org/
+BugReports: https://github.com/Unisens/unisensR/issues
+LazyData: true
+RoxygenNote: 7.0.2
