@@ -1,8 +1,4 @@
-library(XML)
 
-#' @import XML
-#' @importFrom utils read.csv
-#'
 NULL
 
 namespaces <- c(ns="http://www.unisens.org/unisens2.0")
@@ -15,25 +11,25 @@ namespaces <- c(ns="http://www.unisens.org/unisens2.0")
 #' @param id ID of the signal entry.
 #' @return DataFrame.
 #' @examples
-#' readUnisensSignalEntry('../UnisensR/inst/extdata/unisensExample', 'acc.bin')
+#' readUnisensSignalEntry('../UnisensR/inst/extdata/unisensExample', 'ecg.bin')
 readUnisensSignalEntry <- function(unisensFolder, id){
   if(unisensXMLExists(unisensFolder)){
-    doc <- xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
     startTime <- readStartTime(doc)
     xpath <- paste("//ns:signalEntry[@id='", id, "']", sep = '')
-    entries <- getNodeSet(doc, xpath, namespaces )
+    entries <- XML::getNodeSet(doc, xpath, namespaces )
     if(length(entries) <= 0) stop(paste('No SignalEntry found with name', id))
     entry <- entries[[1]]
 
-    sampleRate <- as.numeric(xmlGetAttr(entry, "sampleRate"))
+    sampleRate <- as.numeric(XML::xmlGetAttr(entry, "sampleRate"))
 
-    lsbValue <- as.numeric(xmlGetAttr(entry,"lsbValue"))
+    lsbValue <- as.numeric(XML::xmlGetAttr(entry,"lsbValue"))
     if (length(lsbValue)==0)
     {
       lsbValue <- 1;
     }
 
-    baseline <- as.numeric(xmlGetAttr(entry,"baseline"))
+    baseline <- as.numeric(XML::xmlGetAttr(entry,"baseline"))
     if (length(baseline) ==0)
     {
       baseline <- 0;
@@ -44,9 +40,9 @@ readUnisensSignalEntry <- function(unisensFolder, id){
 
     entryPath <- paste(unisensFolder, id, sep = .Platform$file.sep)
 
-    if (length(getNodeSet(entry, "ns:binFileFormat", namespaces )) == 1)
+    if (length(XML::getNodeSet(entry, "ns:binFileFormat", namespaces )) == 1)
     {
-      dataType <- xmlGetAttr(entry, "dataType")
+      dataType <- XML::xmlGetAttr(entry, "dataType")
       if (dataType=="int16")
       {
         rbSize <- 2;
@@ -70,11 +66,11 @@ readUnisensSignalEntry <- function(unisensFolder, id){
       signalData <- matrix(signalDataVec, ncol = nChannels, byrow = TRUE)
       signalDataFrame <- as.data.frame(signalData)
     }
-    else if (length(getNodeSet(entry, "ns:csvFileFormat", namespaces )) == 1)
+    else if (length(XML::getNodeSet(entry, "ns:csvFileFormat", namespaces )) == 1)
     {
-      csvFileFormatElement<-getNodeSet(entry, "ns:csvFileFormat", namespaces )[[1]]
-      separator <- xmlGetAttr(csvFileFormatElement, "separator")
-      signalDataFrame <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = separator)
+      csvFileFormatElement<-XML::getNodeSet(entry, "ns:csvFileFormat", namespaces )[[1]]
+      separator <- XML::xmlGetAttr(csvFileFormatElement, "separator")
+      signalDataFrame <- utils::read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = separator)
     }
     else {
       stop('Unknown entry file format.');
@@ -108,33 +104,33 @@ readUnisensSignalEntry <- function(unisensFolder, id){
 #' readUnisensValuesEntry('../UnisensR/inst/extdata/unisensExample', 'rr.csv')
 readUnisensValuesEntry <- function(unisensFolder, id){
   if(unisensXMLExists(unisensFolder)){
-    doc <- xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
     start <- readStartTime(doc)
     xpath <- paste("//ns:valuesEntry[@id='", id, "']", sep = '')
-    entries <- getNodeSet(doc, xpath, namespaces )
+    entries <- XML::getNodeSet(doc, xpath, namespaces )
     if(length(entries) <= 0) stop(paste('No ValuesEntry found with name', id))
     entry <- entries[[1]]
-    sampleRate <- as.numeric(xmlGetAttr(entry, "sampleRate"))
-    lsbValue <- as.numeric(xmlGetAttr(entry,"lsbValue"))
+    sampleRate <- as.numeric(XML::xmlGetAttr(entry, "sampleRate"))
+    lsbValue <- as.numeric(XML::xmlGetAttr(entry,"lsbValue"))
     if (length(lsbValue)==0)
     {
       lsbValue <- 1;
     }
 
-    baseline <- as.numeric(xmlGetAttr(entry,"baseline"))
+    baseline <- as.numeric(XML::xmlGetAttr(entry,"baseline"))
     if (length(baseline) ==0)
     {
       baseline <- 0;
     }
-    if (length(getNodeSet(entry, "ns:binFileFormat", namespaces )) == 1)
+    if (length(XML::getNodeSet(entry, "ns:binFileFormat", namespaces )) == 1)
     {
       stop("Values in binFileFormat not implemented.")
     }
-    else if (length(getNodeSet(entry, "ns:csvFileFormat", namespaces )) == 1)
+    else if (length(XML::getNodeSet(entry, "ns:csvFileFormat", namespaces )) == 1)
     {
-      csvFileFormatElement<-getNodeSet(entry, "ns:csvFileFormat", namespaces )[[1]]
-      separator <- xmlGetAttr(csvFileFormatElement, "separator")
-      valuesDataFrame <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = separator)
+      csvFileFormatElement<-XML::getNodeSet(entry, "ns:csvFileFormat", namespaces )[[1]]
+      separator <- XML::xmlGetAttr(csvFileFormatElement, "separator")
+      valuesDataFrame <- utils::read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = separator)
     }
     else {
       stop('Unknown entry file format.');
@@ -169,22 +165,22 @@ unisensXMLExists <- function(unisensFolder){
 #' readUnisensEventEntry('../UnisensR/inst/extdata/unisensExample', 'qrs-trigger.csv')
 readUnisensEventEntry <- function(unisensFolder, id){
   if(unisensXMLExists(unisensFolder)){
-    doc <- xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
     start <- readStartTime(doc)
     xpath <- paste("//ns:eventEntry[@id='", id, "']", sep = '')
-    entries <- getNodeSet(doc, xpath, namespaces )
+    entries <- XML::getNodeSet(doc, xpath, namespaces )
     if(length(entries) <= 0) stop(paste('No EventEntry found with name', id))
     entry <- entries[[1]]
-    sampleRate <- as.numeric(xmlGetAttr(entry, "sampleRate"))
-    if (length(getNodeSet(entry, "ns:binFileFormat", namespaces )) == 1)
+    sampleRate <- as.numeric(XML::xmlGetAttr(entry, "sampleRate"))
+    if (length(XML::getNodeSet(entry, "ns:binFileFormat", namespaces )) == 1)
     {
       stop("Event in binFileFormat not implemented.")
     }
-    else if (length(getNodeSet(entry, "ns:csvFileFormat", namespaces )) == 1)
+    else if (length(XML::getNodeSet(entry, "ns:csvFileFormat", namespaces )) == 1)
     {
-      csvFileFormatElement<-getNodeSet(entry, "ns:csvFileFormat", namespaces )[[1]]
-      separator <- xmlGetAttr(csvFileFormatElement, "separator")
-      eventDataFrame <- read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = separator)
+      csvFileFormatElement<-XML::getNodeSet(entry, "ns:csvFileFormat", namespaces )[[1]]
+      separator <- XML::xmlGetAttr(csvFileFormatElement, "separator")
+      eventDataFrame <- utils::read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = separator)
     }
     else {
       stop('Unknown entry file format.');
@@ -212,8 +208,8 @@ setValuesEntryColumnNames <- function(entry, data) {
 
 getEntryChannelNames <- function(entry)
 {
-  channels <- getNodeSet(entry, "ns:channel", namespaces )
-  channelNames <- sapply(channels, function(el) xmlGetAttr(el, "name"))
+  channels <- XML::getNodeSet(entry, "ns:channel", namespaces )
+  channelNames <- sapply(channels, function(el) XML::xmlGetAttr(el, "name"))
   return(channelNames)
 }
 
@@ -227,7 +223,7 @@ setEventEntryColumnNames <- function(entry, data) {
 }
 
 readStartTime <- function(doc) {
-  startTimeString <- xmlGetAttr(xmlRoot(doc), "timestampStart")
+  startTimeString <- XML::xmlGetAttr(XML::xmlRoot(doc), "timestampStart")
   start <- as.POSIXct(strptime(startTimeString, "%Y-%m-%dT%H:%M:%S"))
   return(start)
 }
@@ -242,7 +238,7 @@ readStartTime <- function(doc) {
 #' readUnisensStartTime('../UnisensR/inst/extdata/unisensExample')
 readUnisensStartTime <- function(unisensFolder) {
   if(unisensXMLExists(unisensFolder)){
-    doc <- xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
     start <- readStartTime(doc)
     free(doc)
     start

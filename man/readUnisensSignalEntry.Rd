@@ -18,5 +18,5 @@ DataFrame.
 Read Unisens Signal Entry
 }
 \examples{
-readUnisensSignalEntry('../UnisensR/inst/extdata/unisensExample', 'acc.bin')
+readUnisensSignalEntry('../UnisensR/inst/extdata/unisensExample', 'ecg.bin')
 }
