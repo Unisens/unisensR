@@ -86,7 +86,7 @@ readUnisensSignalEntry <- function(unisensFolder, id){
     colnames(signalDataFrame) <- channelNames
 
 
-    free(doc)
+    XML::free(doc)
     return(signalDataFrame)
   }
   else
@@ -142,7 +142,7 @@ readUnisensValuesEntry <- function(unisensFolder, id){
     valuesDataFrame <- setTime(valuesDataFrame, start, sampleRate)
     valuesDataFrame <- setValuesEntryColumnNames(entry, valuesDataFrame)
 
-    free(doc)
+    XML::free(doc)
     return(valuesDataFrame)
   }
   else
@@ -187,7 +187,7 @@ readUnisensEventEntry <- function(unisensFolder, id){
     }
     eventDataFrame <- setTime(eventDataFrame, start, sampleRate)
     eventDataFrame <- setEventEntryColumnNames(entry, eventDataFrame)
-    free(doc)
+    XML::free(doc)
     return(eventDataFrame)
   }
   else
@@ -240,7 +240,7 @@ readUnisensStartTime <- function(unisensFolder) {
   if(unisensXMLExists(unisensFolder)){
     doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
     start <- readStartTime(doc)
-    free(doc)
+    XML::free(doc)
     start
   }
   else

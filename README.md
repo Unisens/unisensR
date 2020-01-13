@@ -1,8 +1,8 @@
 # unisensR
 
-This library is a prototype to demonstrate how to use the unisens file format in R.
+This Library provides functions to import Unisens data into R. Unisens is a universal data format for multi sensor data.
 
-Currenlty it is only supported to read CSV ValuesEntries and EventEntries with comma separated values.
+Currenlty it supportes to read CSV ValuesEntries and EventEntries with comma separated values and BIN SignalEntries in int16 and int32 data types.
 
 ## How to install unisensR
 ```r
