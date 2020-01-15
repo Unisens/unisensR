@@ -16,5 +16,5 @@ POSIXct unisens start time
 Read Unisens Start Time
 }
 \examples{
-readUnisensStartTime('../UnisensR/inst/extdata/unisensExample')
+readUnisensStartTime('./unisensR/extdata/unisensExample')
 }

@@ -18,5 +18,5 @@ DataFrame.
 Read Unisens Values Entry
 }
 \examples{
-readUnisensValuesEntry('../UnisensR/inst/extdata/unisensExample', 'rr.csv')
+readUnisensValuesEntry('./unisensR/extdata/unisensExample', 'rr.csv')
 }
