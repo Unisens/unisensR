@@ -1,0 +1,24 @@
+<unisens xmlns="http://www.unisens.org/unisens2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" comment="UNISENS - a universal data format for multi sensor data, Workshop Biosignalverarbeitung 2008" measurementId="#20080704001" timestampStart="2008-07-04T13:27:57" version="2.0" xsi:schemaLocation="http://www.unisens.org/unisens2.0 unisens.xsd">
+   <signalEntry adcResolution="16" comment="acc" contentClass="acc" dataType="int16" id="acc.bin" lsbValue="0.00048828125" sampleRate="64" unit="g">
+      <binFileFormat endianess="LITTLE" />
+      <channel name="accX" />
+      <channel name="accY" />
+      <channel name="accZ" />
+   </signalEntry>
+   <signalEntry adcResolution="16" adcZero="32768" comment="ECG with dry electrodes" contentClass="ECG" dataType="int32" id="ecg.bin" sampleRate="200" unit="mV">
+      <binFileFormat endianess="LITTLE"/>
+      <channel name="Brustgurt"/>
+   </signalEntry>
+   <signalEntry comment="Mean temperature in output interval" dataType="double" id="TempMean.csv" lsbValue="1" sampleRate="0.016666666666666666" unit="degrees Celsius">
+    <csvFileFormat decimalSeparator="," separator=";"/>
+    <channel name="TempMean"/>
+  </signalEntry>
+   <valuesEntry comment="Blood pressure auscultatoric" contentClass="RR" dataType="int32" id="rr.csv" lsbValue="1" sampleRate="1" unit="mmHg">
+      <csvFileFormat decimalSeparator="." separator=","/>
+      <channel name="Systolic"/>
+      <channel name="Diastolic"/>
+   </valuesEntry>
+   <eventEntry comment="Reference trigger list" contentClass="TRIGGER" id="qrs-trigger.csv" sampleRate="200">
+      <csvFileFormat decimalSeparator="." separator=","/>
+   </eventEntry>
+</unisens>
