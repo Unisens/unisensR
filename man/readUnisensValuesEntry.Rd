@@ -17,6 +17,3 @@ DataFrame.
 \description{
 Read Unisens Values Entry
 }
-\examples{
-readUnisensValuesEntry('./unisensR/extdata/unisensExample', 'rr.csv')
-}

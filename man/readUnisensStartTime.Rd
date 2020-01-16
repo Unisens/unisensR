@@ -15,6 +15,3 @@ POSIXct unisens start time
 \description{
 Read Unisens Start Time
 }
-\examples{
-readUnisensStartTime('./unisensR/extdata/unisensExample')
-}

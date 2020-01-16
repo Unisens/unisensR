@@ -17,6 +17,3 @@ DataFrame.
 \description{
 Read Unisens Signal Entry
 }
-\examples{
-readUnisensSignalEntry('./unisensR/extdata/unisensExample', 'ecg.bin')
-}

@@ -17,6 +17,3 @@ DataFrame.
 \description{
 Read Unisens Event Entry
 }
-\examples{
-readUnisensEventEntry('./unisensR/extdata/unisensExample', 'qrs-trigger.csv')
-}
