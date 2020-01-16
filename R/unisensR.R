@@ -1,6 +1,3 @@
-
-NULL
-
 namespaces <- c(ns="http://www.unisens.org/unisens2.0")
 
 #' Read Unisens Signal Entry
