@@ -7,6 +7,9 @@ namespaces <- c(ns="http://www.unisens.org/unisens2.0")
 #' @param unisensFolder Unisens Folder
 #' @param id ID of the signal entry.
 #' @return DataFrame.
+#' @examples
+#' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+#' readUnisensSignalEntry(unisensPath, 'ecg.bin')
 readUnisensSignalEntry <- function(unisensFolder, id){
   if(unisensXMLExists(unisensFolder)){
     doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
@@ -95,6 +98,9 @@ readUnisensSignalEntry <- function(unisensFolder, id){
 #' @param unisensFolder Unisens Folder
 #' @param id ID of the values entry.
 #' @return DataFrame.
+#' @examples
+#' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+#' readUnisensValuesEntry(unisensPath, 'rr.csv')
 readUnisensValuesEntry <- function(unisensFolder, id){
   if(unisensXMLExists(unisensFolder)){
     doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
@@ -154,6 +160,9 @@ unisensXMLExists <- function(unisensFolder){
 #' @param unisensFolder Unisens Folder
 #' @param id ID of the event entry.
 #' @return DataFrame.
+#' @examples
+#' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+#' readUnisensEventEntry(unisensPath, 'qrs-trigger.csv')
 readUnisensEventEntry <- function(unisensFolder, id){
   if(unisensXMLExists(unisensFolder)){
     doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
@@ -225,6 +234,9 @@ readStartTime <- function(doc) {
 #'
 #' @param unisensFolder Unisens Folder
 #' @return POSIXct unisens start time
+#' @examples
+#' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+#' readUnisensStartTime(unisensPath)
 readUnisensStartTime <- function(unisensFolder) {
   if(unisensXMLExists(unisensFolder)){
     doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))

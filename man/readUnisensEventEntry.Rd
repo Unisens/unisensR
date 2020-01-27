@@ -17,3 +17,7 @@ DataFrame.
 \description{
 Read Unisens Event Entry
 }
+\examples{
+unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+readUnisensEventEntry(unisensPath, 'qrs-trigger.csv')
+}

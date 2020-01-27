@@ -17,3 +17,7 @@ DataFrame.
 \description{
 Read Unisens Signal Entry
 }
+\examples{
+unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+readUnisensSignalEntry(unisensPath, 'ecg.bin')
+}

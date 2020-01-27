@@ -15,3 +15,7 @@ POSIXct unisens start time
 \description{
 Read Unisens Start Time
 }
+\examples{
+unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+readUnisensStartTime(unisensPath)
+}

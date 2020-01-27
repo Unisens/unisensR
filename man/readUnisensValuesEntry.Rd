@@ -17,3 +17,7 @@ DataFrame.
 \description{
 Read Unisens Values Entry
 }
+\examples{
+unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+readUnisensValuesEntry(unisensPath, 'rr.csv')
+}
