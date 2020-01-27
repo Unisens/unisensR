@@ -3,7 +3,7 @@
 ## Test environments
 
 - local Windows 10 Pro (x64) install, 3.6.2
-- local Ubuntu 18.04.1, R 3.4.4
+- R-hub (Debian Linux, R-devel)
 - win-builder (R-release, R-devel, R-devel ATC and R-oldrelease)
 
 ## R CMD check results
