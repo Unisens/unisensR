@@ -1,6 +1,6 @@
 Package: unisensR
 Type: Package
-Title: Library to Read Unisens Data into R
+Title: Read Unisens Data
 Version: 0.3.2
 Date: 2020-01-13
 Authors@R: c(
