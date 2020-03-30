@@ -5,12 +5,13 @@ namespaces <- c(ns="http://www.unisens.org/unisens2.0")
 #' @export
 #'
 #' @param unisensFolder Unisens Folder
-#' @param id ID of the signal entry.
+#' @param id ID of the signal entry
+#' @param binReadChunkSize chunk size of read values for bin file format, default: 2^16
 #' @return DataFrame.
 #' @examples
 #' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
 #' readUnisensSignalEntry(unisensPath, 'ecg.bin')
-readUnisensSignalEntry <- function(unisensFolder, id){
+readUnisensSignalEntry <- function(unisensFolder, id, binReadChunkSize = 2^16){
   if(unisensXMLExists(unisensFolder)){
     doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
     startTime <- readStartTime(doc)
@@ -59,8 +60,25 @@ readUnisensSignalEntry <- function(unisensFolder, id){
       }
 
       rbN <- file.info(entryPath)$size / rbSize
+      rbNquotient <- rbN %/% binReadChunkSize
+      rbNremainder <- rbN %% binReadChunkSize
+      nVec <- rep(binReadChunkSize, rbNquotient)
+      if (rbNremainder > 0) {
+        nVec <- c(nVec, rbNremainder)
+      }
+      signalDataVec <- vector()
+      for (index in 1:length(nVec)) {
+        signalDataVec <- c(signalDataVec, hexView::blockValue(hexView::readRaw(
+          file = entryPath,
+          offset = (index-1) * binReadChunkSize * rbSize,
+          nbytes = nVec[index] * rbSize,
+          human = "int",
+          size = rbSize,
+          endian = "little",
+          signed = rbSigned
+        )))
+      }
 
-      signalDataVec <- readBin(entryPath, rbType, n = rbN,  size = rbSize, signed = rbSigned, endian = "little")
       signalData <- matrix(signalDataVec, ncol = nChannels, byrow = TRUE)
       signalDataFrame <- as.data.frame(signalData)
     }

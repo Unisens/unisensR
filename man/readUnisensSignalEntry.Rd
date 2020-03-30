@@ -4,12 +4,14 @@
 \alias{readUnisensSignalEntry}
 \title{Read Unisens Signal Entry}
 \usage{
-readUnisensSignalEntry(unisensFolder, id)
+readUnisensSignalEntry(unisensFolder, id, binReadChunkSize = 2^16)
 }
 \arguments{
 \item{unisensFolder}{Unisens Folder}
 
-\item{id}{ID of the signal entry.}
+\item{id}{ID of the signal entry}
+
+\item{binReadChunkSize}{chunk size of read values for bin file format, default: 2^16}
 }
 \value{
 DataFrame.
