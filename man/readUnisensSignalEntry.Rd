@@ -4,14 +4,24 @@
 \alias{readUnisensSignalEntry}
 \title{Read Unisens Signal Entry}
 \usage{
-readUnisensSignalEntry(unisensFolder, id, binReadChunkSize = 2^16)
+readUnisensSignalEntry(
+  unisensFolder,
+  id,
+  binReadChunkSize = 2^16,
+  startIndex = 1,
+  endIndex = getUnisensSignalSampleCount(unisensFolder, id)
+)
 }
 \arguments{
-\item{unisensFolder}{Unisens Folder}
+\item{unisensFolder}{String containing path to Unisens folder.}
 
-\item{id}{ID of the signal entry}
+\item{id}{String containing ID of the signal entry.}
 
-\item{binReadChunkSize}{chunk size of read values for bin file format, default: 2^16}
+\item{binReadChunkSize}{Interger of chunk size of read values for bin file format, default: 2^16.}
+
+\item{startIndex}{Integer of the value-index on which the read process starts, default: 1.}
+
+\item{endIndex}{Integer of the value-index on which the read process ends, default: last Index of file.}
 }
 \value{
 DataFrame.
