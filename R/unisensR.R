@@ -6,14 +6,16 @@ namespaces <- c(ns="http://www.unisens.org/unisens2.0")
 #'
 #' @param unisensFolder String containing path to Unisens folder.
 #' @param id String containing ID of the signal entry.
-#' @param binReadChunkSize Interger of chunk size of read values for bin file format, default: 2^16.
 #' @param startIndex Integer of the value-index on which the read process starts, default: 1.
 #' @param endIndex Integer of the value-index on which the read process ends, default: last Index of file.
+#' @param binReadInChunks Boolean determines if the reading process of binary files is done in chunks.
+#' This could be useful if you run into memory limits when reading big files. default: FALSE.
+#' @param binReadChunkSize Interger of chunk size of read values for bin file format, default: 2^16.
 #' @return DataFrame.
 #' @examples
 #' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
 #' readUnisensSignalEntry(unisensPath, 'ecg.bin')
-readUnisensSignalEntry <- function(unisensFolder, id, binReadChunkSize = 2^16, startIndex = 1, endIndex = getUnisensSignalSampleCount(unisensFolder, id) ){
+readUnisensSignalEntry <- function( unisensFolder, id, endIndex = getUnisensSignalSampleCount(unisensFolder, id), binReadInChunks = FALSE, binReadChunkSize = 2^16, startIndex = 1 ){
   if(unisensXMLExists(unisensFolder)){
 
     signalSampleCount <- getUnisensSignalSampleCount(unisensFolder, id)
@@ -67,12 +69,18 @@ readUnisensSignalEntry <- function(unisensFolder, id, binReadChunkSize = 2^16, s
       }
 
       rbN <- (endIndex - startIndex + 1) * nChannels
-      rbNquotient <- rbN %/% binReadChunkSize
-      rbNremainder <- rbN %% binReadChunkSize
-      nVec <- rep(binReadChunkSize, rbNquotient)
-      if (rbNremainder > 0) {
-        nVec <- c(nVec, rbNremainder)
+      nVec <- vector()
+      if (binReadInChunks) {
+        rbNquotient <- rbN %/% binReadChunkSize
+        rbNremainder <- rbN %% binReadChunkSize
+        nVec <- rep(binReadChunkSize, rbNquotient)
+        if (rbNremainder > 0) {
+          nVec <- c(nVec, rbNremainder)
+        }
+      } else {
+        nVec <- c(nVec, rbN)
       }
+
       signalDataVec <- vector()
       for (index in 1:length(nVec)) {
         signalDataVec <- c(signalDataVec, hexView::blockValue(hexView::readRaw(
