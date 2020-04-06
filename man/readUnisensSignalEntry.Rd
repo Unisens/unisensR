@@ -7,10 +7,10 @@
 readUnisensSignalEntry(
   unisensFolder,
   id,
+  startIndex = 1,
   endIndex = getUnisensSignalSampleCount(unisensFolder, id),
-  binReadInChunks = FALSE,
-  binReadChunkSize = 2^16,
-  startIndex = 1
+  readInChunks = FALSE,
+  readChunkSize = 2^16
 )
 }
 \arguments{
@@ -18,14 +18,14 @@ readUnisensSignalEntry(
 
 \item{id}{String containing ID of the signal entry.}
 
+\item{startIndex}{Integer of the value-index on which the read process starts, default: 1.}
+
 \item{endIndex}{Integer of the value-index on which the read process ends, default: last Index of file.}
 
-\item{binReadInChunks}{Boolean determines if the reading process of binary files is done in chunks.
+\item{readInChunks}{Boolean determines if the reading process is done in chunks.
 This could be useful if you run into memory limits when reading big files. default: FALSE.}
 
-\item{binReadChunkSize}{Interger of chunk size of read values for bin file format, default: 2^16.}
-
-\item{startIndex}{Integer of the value-index on which the read process starts, default: 1.}
+\item{readChunkSize}{Interger defining the size of chunks if chunk reading is enabled, defined in samples, default: 2^16.}
 }
 \value{
 DataFrame.
