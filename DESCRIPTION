@@ -1,8 +1,8 @@
 Package: unisensR
 Type: Package
 Title: Read 'Unisens' Data
-Version: 0.3.2
-Date: 2020-01-13
+Version: 0.3.3
+Date: 2020-04-22
 Authors@R: c(
 	person("Martin", "Penzel", email = "Martin.Penzel@movisens.com", role = c("ctb","cre")),
 	person("Jürgen", "Stumpp", email = "Stumpp@movisens.com", role = "aut"),
