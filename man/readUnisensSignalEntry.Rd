@@ -25,7 +25,7 @@ readUnisensSignalEntry(
 \item{readInChunks}{Boolean determines if the reading process is done in chunks.
 This could be useful if you run into memory limits when reading big files. default: FALSE.}
 
-\item{readChunkSize}{Interger defining the size of chunks if chunk reading is enabled, defined in samples, default: 2^16.}
+\item{readChunkSize}{Integer defining the size of chunks if chunk reading is enabled, defined in samples, default: 2^16.}
 }
 \value{
 DataFrame.
