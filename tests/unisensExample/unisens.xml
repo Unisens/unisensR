@@ -5,6 +5,12 @@
       <channel name="accY" />
       <channel name="accZ" />
    </signalEntry>
+   <signalEntry comment="acc" contentClass="acc" dataType="double" id="acc.csv" lsbValue="1" sampleRate="64" unit="g">
+      <csvFileFormat decimalSeparator="." separator=";"/>
+      <channel name="accX"/>
+      <channel name="accY"/>
+      <channel name="accZ"/>
+   </signalEntry>
    <signalEntry adcResolution="16" adcZero="32768" comment="ECG with dry electrodes" contentClass="ECG" dataType="int32" id="ecg.bin" sampleRate="200" unit="mV">
       <binFileFormat endianess="LITTLE"/>
       <channel name="Brustgurt"/>

@@ -4,12 +4,28 @@
 \alias{readUnisensSignalEntry}
 \title{Read Unisens Signal Entry}
 \usage{
-readUnisensSignalEntry(unisensFolder, id)
+readUnisensSignalEntry(
+  unisensFolder,
+  id,
+  startIndex = 1,
+  endIndex = getUnisensSignalSampleCount(unisensFolder, id),
+  readInChunks = FALSE,
+  readChunkSize = 2^16
+)
 }
 \arguments{
-\item{unisensFolder}{Unisens Folder}
+\item{unisensFolder}{String containing path to Unisens folder.}
 
-\item{id}{ID of the signal entry.}
+\item{id}{String containing ID of the signal entry.}
+
+\item{startIndex}{Integer of the value-index on which the read process starts, default: 1.}
+
+\item{endIndex}{Integer of the value-index on which the read process ends, default: last Index of file.}
+
+\item{readInChunks}{Boolean determines if the reading process is done in chunks.
+This could be useful if you run into memory limits when reading big files. default: FALSE.}
+
+\item{readChunkSize}{Interger defining the size of chunks if chunk reading is enabled, defined in samples, default: 2^16.}
 }
 \value{
 DataFrame.

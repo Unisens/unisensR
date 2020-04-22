@@ -4,14 +4,26 @@ namespaces <- c(ns="http://www.unisens.org/unisens2.0")
 #'
 #' @export
 #'
-#' @param unisensFolder Unisens Folder
-#' @param id ID of the signal entry.
+#' @param unisensFolder String containing path to Unisens folder.
+#' @param id String containing ID of the signal entry.
+#' @param startIndex Integer of the value-index on which the read process starts, default: 1.
+#' @param endIndex Integer of the value-index on which the read process ends, default: last Index of file.
+#' @param readInChunks Boolean determines if the reading process is done in chunks.
+#' This could be useful if you run into memory limits when reading big files. default: FALSE.
+#' @param readChunkSize Interger defining the size of chunks if chunk reading is enabled, defined in samples, default: 2^16.
 #' @return DataFrame.
 #' @examples
 #' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
 #' readUnisensSignalEntry(unisensPath, 'ecg.bin')
-readUnisensSignalEntry <- function(unisensFolder, id){
+readUnisensSignalEntry <- function( unisensFolder, id, startIndex = 1, endIndex = getUnisensSignalSampleCount(unisensFolder, id), readInChunks = FALSE, readChunkSize = 2^16 ){
   if(unisensXMLExists(unisensFolder)){
+
+    signalSampleCount <- getUnisensSignalSampleCount(unisensFolder, id)
+    if (startIndex < 1 || startIndex > signalSampleCount) {stop("startIndex out of bounds.")}
+    if (endIndex > signalSampleCount) {stop("endIndex out of bounds.")}
+    if (endIndex < startIndex) {stop("endIndex has to be greater or equal to startIndex.")}
+    if (readChunkSize <= 0) {stop('readChunkSize has to be greater than zero!')}
+
     doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
     startTime <- readStartTime(doc)
     xpath <- paste("//ns:signalEntry[@id='", id, "']", sep = '')
@@ -58,9 +70,27 @@ readUnisensSignalEntry <- function(unisensFolder, id){
         stop("Datatype not defined yet.")
       }
 
-      rbN <- file.info(entryPath)$size / rbSize
+      rbN <- (endIndex - startIndex + 1) * nChannels
+      totalLinesToRead <- endIndex - startIndex + 1
+      readVector <- getReadVector(
+        readCount = rbN,
+        readInChunks = readInChunks,
+        readChunkSize = readChunkSize
+      )
 
-      signalDataVec <- readBin(entryPath, rbType, n = rbN,  size = rbSize, signed = rbSigned, endian = "little")
+      signalDataVec <- vector()
+      for (index in 1:length(readVector)) {
+        signalDataVec <- c(signalDataVec, hexView::blockValue(hexView::readRaw(
+          file = entryPath,
+          offset = ( (startIndex - 1) * nChannels + ( (index - 1) * readChunkSize) ) * rbSize,
+          nbytes = readVector[index] * rbSize,
+          human = "int",
+          size = rbSize,
+          endian = "little",
+          signed = rbSigned
+        )))
+      }
+
       signalData <- matrix(signalDataVec, ncol = nChannels, byrow = TRUE)
       signalDataFrame <- as.data.frame(signalData)
     }
@@ -68,7 +98,30 @@ readUnisensSignalEntry <- function(unisensFolder, id){
     {
       csvFileFormatElement<-XML::getNodeSet(entry, "ns:csvFileFormat", namespaces )[[1]]
       separator <- XML::xmlGetAttr(csvFileFormatElement, "separator")
-      signalDataFrame <- utils::read.csv(paste(unisensFolder, id, sep = .Platform$file.sep), header = FALSE, sep = separator)
+
+      totalLinesToRead <- endIndex - startIndex + 1
+      readVector <- getReadVector(
+        readCount = totalLinesToRead,
+        readInChunks = readInChunks,
+        readChunkSize = readChunkSize
+      )
+
+      signalDataFrame  <- data.frame()
+
+      for (index in 1:length(readVector)) {
+        signalDataFrame <- rbind(
+          signalDataFrame,
+          utils::read.csv(
+            file = paste(unisensFolder, id, sep = .Platform$file.sep),
+            header = FALSE,
+            sep = separator,
+            skip = startIndex - 1 + ( (index - 1) * readChunkSize ),
+            nrows = readVector[index],
+            flush = TRUE
+          ))
+      }
+      # delete all columns that only contain 'NA'
+      signalDataFrame <- signalDataFrame[colSums(!is.na(signalDataFrame)) > 0]
     }
     else {
       stop('Unknown entry file format.');
@@ -86,6 +139,85 @@ readUnisensSignalEntry <- function(unisensFolder, id){
 
     XML::free(doc)
     return(signalDataFrame)
+  }
+  else
+    stop('Folder does not contain Unisens data!')
+}
+
+#' Get Read Vector for signal reading
+#' Read Vector contains the number of samples that should be read in one reading process
+#' @param readCount Integer ( >= 0 ) defining the number of data-entities (integers, lines) that should be read
+#' @param readInChunks Boolean defines if chunk reading is enabled or not
+#' @param readChunkSize Integer ( > 0 ) defining the size of reading chunks if chunk reading is enabled
+#' @noRd
+getReadVector <- function (readCount, readInChunks, readChunkSize) {
+  if (readCount < 0) {stop('readCount can\'t be negative!')}
+  if (readChunkSize <= 0) {stop('readChunkSize has to be greater than zero!')}
+
+  readVector <- vector()
+  if (readInChunks) {
+    readCountQuotient <- readCount %/% readChunkSize
+    readCountRemainder <- readCount %% readChunkSize
+    readVector <- rep(readChunkSize, readCountQuotient)
+    if (readCountRemainder > 0) {
+      readVector <- c(readVector, readCountRemainder)
+    }
+  } else {
+    readVector <- c(readVector, readCount)
+  }
+  return(readVector)
+}
+
+#' Get Unisens Signal Sample Count
+#'
+#' @export
+#'
+#' @param unisensFolder Unisens Folder
+#' @param id ID of the signal entry
+#' @return Long
+#' @examples
+#' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+#' getUnisensSignalSampleCount(unisensPath, 'ecg.bin')
+getUnisensSignalSampleCount <- function (unisensFolder, id) {
+  if(unisensXMLExists(unisensFolder)){
+    doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    xpath <- paste("//ns:signalEntry[@id='", id, "']", sep = '')
+    entries <- XML::getNodeSet(doc, xpath, namespaces )
+    if(length(entries) <= 0) stop(paste('No SignalEntry found with name', id))
+    entry <- entries[[1]]
+    entryPath <- paste(unisensFolder, id, sep = .Platform$file.sep)
+
+    channelNames <- getEntryChannelNames(entry)
+    nChannels <- length(channelNames)
+
+    if (length(XML::getNodeSet(entry, "ns:binFileFormat", namespaces )) == 1)
+    {
+      dataType <- XML::xmlGetAttr(entry, "dataType")
+      if (dataType=="int16")
+      {
+        rbSize <- 2;
+      }
+      else if (dataType=="int32")
+      {
+        rbSize <- 4;
+      }
+      else
+      {
+        stop("Datatype not defined yet.")
+      }
+
+      rbN <- file.info(entryPath)$size / rbSize
+      maxIndex <- rbN %/% nChannels
+    }
+    else if (length(XML::getNodeSet(entry, "ns:csvFileFormat", namespaces )) == 1)
+    {
+      maxIndex <- length(vroom::vroom_lines(entryPath))
+    }
+    else {
+      stop('Unknown entry file format.');
+    }
+    XML::free(doc)
+    return(maxIndex)
   }
   else
     stop('Folder does not contain Unisens data!')
