@@ -10,7 +10,7 @@ namespaces <- c(ns="http://www.unisens.org/unisens2.0")
 #' @param endIndex Integer of the value-index on which the read process ends, default: last Index of file.
 #' @param readInChunks Boolean determines if the reading process is done in chunks.
 #' This could be useful if you run into memory limits when reading big files. default: FALSE.
-#' @param readChunkSize Interger defining the size of chunks if chunk reading is enabled, defined in samples, default: 2^16.
+#' @param readChunkSize Integer defining the size of chunks if chunk reading is enabled, defined in samples, default: 2^16.
 #' @return DataFrame.
 #' @examples
 #' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
