@@ -354,6 +354,8 @@ setEventEntryColumnNames <- function(entry, data) {
   return(data)
 }
 
+
+
 readStartTime <- function(doc) {
   startTimeString <- XML::xmlGetAttr(XML::xmlRoot(doc), "timestampStart")
   start <- as.POSIXct(strptime(startTimeString, "%Y-%m-%dT%H:%M:%S"))
@@ -375,6 +377,67 @@ readUnisensStartTime <- function(unisensFolder) {
     start <- readStartTime(doc)
     XML::free(doc)
     start
+  }
+  else
+    stop('Folder does not contain Unisens data!')
+}
+
+
+getMeasurementId <- function (doc) {
+  mId <- XML::xmlGetAttr(XML::xmlRoot(doc), "measurementId")
+  return(mId)
+}
+
+#' Get Unisens Measurement Id Time
+#'
+#' @export
+#'
+#' @param unisensFolder Unisens Folder
+#' @return string measurement id
+#' @examples
+#' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+#' getUnisensMeasurementId(unisensPath)
+getUnisensMeasurementId <- function(unisensFolder) {
+  if(unisensXMLExists(unisensFolder)){
+    doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    mId <- getMeasurementId(doc)
+    XML::free(doc)
+    return(mId)
+  }
+  else
+    stop('Folder does not contain Unisens data!')
+}
+
+getCustomAttributes <- function (doc) {
+  attributes <- new.env(hash = TRUE)
+  attributeElements <- XML::getNodeSet(doc, "//ns:customAttributes/ns:customAttribute", namespaces )
+  n = length(attributeElements)
+  if (n > 0) {
+    for (i in 1:length(attributeElements)) {
+      attributeElement = attributeElements[[i]]
+      k <- XML::xmlGetAttr(attributeElement, "key")
+      v <- XML::xmlGetAttr(attributeElement, "value")
+      attributes[[k]] <- v
+    }
+  }
+  return(attributes)
+}
+
+#' Get Unisens Custom Attributes
+#'
+#' @export
+#'
+#' @param unisensFolder Unisens Folder
+#' @return hash map of all custom attributes
+#' @examples
+#' unisensPath <- system.file('extdata/unisensExample', package = 'unisensR', mustWork = TRUE)
+#' getUnisensCustomAttributes(unisensPath)
+getUnisensCustomAttributes <- function(unisensFolder) {
+  if(unisensXMLExists(unisensFolder)){
+    doc <- XML::xmlParse(paste(unisensFolder, 'unisens.xml', sep = '/'))
+    ca <- getCustomAttributes(doc)
+    XML::free(doc)
+    return(ca)
   }
   else
     stop('Folder does not contain Unisens data!')

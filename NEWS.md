@@ -1,3 +1,7 @@
+# v0.3.4 (2022-07-12)
+- Added function getUnisensMeasurementId
+- Added function getUnisensCustomAttributes
+
 # v0.3.3 (2020-04-22)
 
 - Added function 'getUnisensSignalSampleCount'
