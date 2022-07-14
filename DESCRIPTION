@@ -18,7 +18,7 @@ Imports:
 	hexView,
 	vroom
 License: LGPL
-URL: http://unisens.org/
+URL: https://unisens.org/
 BugReports: https://github.com/Unisens/unisensR/issues
 Encoding: UTF-8
 LazyData: true
